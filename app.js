@@ -163,7 +163,6 @@ function mostrarProductos() {
                     ${p.modelo ? 'Modelo: '+escapeHtml(p.modelo)+'<br>' : ''}
                     ${p.color  ? 'Color: ' +escapeHtml(p.color) +'<br>' : ''}
                 </div>
-                <div class="product-stock">Stock: ${p.stock} unidades</div>
                 <div class="product-price">$${Number(p.precio).toLocaleString()}</div>
                 <div class="product-actions">
                     <button class="btn-add" onclick="agregarAlCarrito(${p.id})">
@@ -184,9 +183,12 @@ function actualizarBotonesCategoria() {
 }
 
 function actualizarBotonesModelo() {
-    document.getElementById('modeloButtons').innerHTML = modelos.map(m =>
-        `<button class="filter-btn ${m.id===modeloActual?'active':''}" onclick="filtrarPorModelo('${m.id}',this)">${m.nombre}</button>`
-    ).join('');
+    const sel = document.getElementById('modeloSelect');
+    if (!sel) return;
+    sel.innerHTML = '<option value="" disabled>Selecciona tu modelo...</option>' +
+        modelos.map(m =>
+            `<option value="${m.id}" ${m.id===modeloActual?'selected':''}>${m.nombre}</option>`
+        ).join('');
 }
 
 // ================================================================
@@ -200,10 +202,8 @@ function filtrarPorCategoria(cat, btn) {
     mostrarProductos();
 }
 
-function filtrarPorModelo(modelo, btn) {
+function filtrarPorModelo(modelo) {
     modeloActual = modelo;
-    document.querySelectorAll('#modeloButtons .filter-btn').forEach(b => b.classList.remove('active'));
-    if (btn) btn.classList.add('active');
     mostrarProductos();
 }
 

@@ -49,7 +49,9 @@
         </div>
         <div class="filter-group" id="modeloFilter" style="display:none;">
             <span class="filter-label">Modelo de iPhone</span>
-            <div class="filter-buttons" id="modeloButtons"></div>
+            <select id="modeloSelect" class="modelo-select" onchange="filtrarPorModelo(this.value)">
+                <option value="" disabled>Selecciona tu modelo...</option>
+            </select>
         </div>
     </div>
     <div class="products-grid" id="productosGrid"></div>
