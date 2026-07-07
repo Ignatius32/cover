@@ -6,6 +6,7 @@ header { background: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1); position: sti
 .header-content { max-width: 1200px; margin: 0 auto; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: relative; }
 .logo { font-size: 28px; font-weight: bold; color: #223A63; }
 .header-buttons { display: flex; gap: 10px; align-items: center; }
+.header-actions { display: flex; align-items: center; gap: 10px; }
 
 /* Hamburger */
 .hamburger { display: none; flex-direction: column; justify-content: center; gap: 5px; background: none; border: none; cursor: pointer; padding: 6px; width: auto; height: auto; border-radius: 6px; }
