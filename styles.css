@@ -210,7 +210,7 @@ button { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; 
 .modal.active, .modal-contacto.active, .modal-password.active { pointer-events: auto; }
 
 /* Toast notification */
-.toast { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%) translateY(24px); background-color: #1db954; color: white; padding: 18px 40px; border-radius: 16px; font-weight: bold; font-size: 19px; box-shadow: 0 12px 36px rgba(0,0,0,0.35); z-index: 9999; opacity: 0; transition: opacity 0.35s, transform 0.35s; pointer-events: none; white-space: nowrap; letter-spacing: 0.3px; border: 2px solid rgba(255,255,255,0.25); }
+.toast { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%) translateY(24px); background-color: #1db954; color: white; padding: 18px 32px; border-radius: 16px; font-weight: bold; font-size: 19px; box-shadow: 0 12px 36px rgba(0,0,0,0.35); z-index: 9999; opacity: 0; transition: opacity 0.35s, transform 0.35s; pointer-events: none; white-space: normal; text-align: center; max-width: calc(100vw - 40px); word-break: break-word; letter-spacing: 0.3px; border: 2px solid rgba(255,255,255,0.25); }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
 /* Stock admin */
@@ -248,13 +248,32 @@ footer p { font-size: 14px; }
     }
     .header-buttons.open { display: flex; }
     .header-buttons button { width: 100%; text-align: left; }
-    .products-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+    .products-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; }
+    .product-image { height: 160px; }
+    .product-info { padding: 10px; }
+    .product-name { font-size: 13px; }
+    .product-price { font-size: 15px; }
+    .btn-add { font-size: 11px; padding: 8px 6px; }
     .cart-sidebar { width: 100%; }
     .form-row { grid-template-columns: 1fr; }
-    .hero h1 { font-size: 28px; }
-    .hero p { font-size: 15px; }
-    .special-orders { margin-left: -20px; margin-right: -20px; border-radius: 0; }
+    .form-group input, .form-group select, .form-group textarea { font-size: 16px; }
+    .add-category-form input { font-size: 16px; }
+    .stock-input { font-size: 16px; width: 60px; }
+    .password-input { font-size: 16px; }
+    .search-input { font-size: 16px; }
+    .hero { padding: 28px 20px; }
+    .hero h1 { font-size: 26px; }
+    .hero p { font-size: 14px; }
+    .special-orders { margin-left: -20px; margin-right: -20px; border-radius: 0; padding: 30px 16px; }
+    .special-orders h2 { font-size: 22px; }
+    .special-orders-list { grid-template-columns: 1fr; gap: 10px; margin-bottom: 20px; }
+    .btn-special-order { width: 100%; justify-content: center; padding: 14px 20px; box-sizing: border-box; }
+    .btn-special-order-main { font-size: 15px; }
+    .modal-content { padding: 20px; margin: 10px auto; }
     .admin-grid { grid-template-columns: 1fr; }
     .admin-section-wide { grid-column: 1; }
-    .admin-page-header h1 { font-size: 16px; }
+    .admin-page-header h1 { font-size: 15px; }
+    .btn-back-store { padding: 7px 10px; font-size: 12px; }
+    .admin-page-content { padding: 16px 12px 40px; }
+    .toast { font-size: 15px; padding: 14px 20px; bottom: 20px; }
 }

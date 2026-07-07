@@ -697,16 +697,16 @@ function cerrarCarrito() { document.getElementById('cartSidebar').classList.remo
 
 function cotizarPorWhatsApp() {
     if (!carrito.length) { alert('Tu carrito está vacío'); return; }
-    let msg = '¡Hola! 👋 Me gustaría cotizar los siguientes productos de Cover Store:\n\n';
+    let msg = 'Hola! Quisiera cotizar los siguientes productos de Cover Store:\n\n';
     let total = 0;
     carrito.forEach(i => {
         const sub = i.precio*i.cantidad; total += sub;
-        msg += `📦 ${i.nombre}`;
-        if (i.color)  msg += ` - ${i.color}`;
-        if (i.modelo) msg += ` (${i.modelo})`;
-        msg += ` x${i.cantidad} — $${sub.toLocaleString()}\n`;
+        msg += `- ${i.nombre}`;
+        if (i.color)  msg += ` (${i.color})`;
+        if (i.modelo) msg += ` - ${i.modelo}`;
+        msg += ` x${i.cantidad} = $${sub.toLocaleString('es-AR')}\n`;
     });
-    msg += `\n💰 Total aprox: $${total.toLocaleString()}\n\n¿Cuál sería el precio final con envío?`;
+    msg += `\nTotal aprox: $${total.toLocaleString('es-AR')}\n\nCual seria el precio final con envio?`;
     window.open(`https://wa.me/5493794861508?text=${encodeURIComponent(msg)}`, '_blank');
 }
 
