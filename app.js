@@ -56,12 +56,12 @@ const MODELOS = [
 // MOBILE MENU
 // ================================================================
 function toggleMobileMenu() {
-    document.getElementById('hamburger').classList.toggle('open');
-    document.getElementById('headerButtons').classList.toggle('open');
+    document.getElementById('hamburger')?.classList.toggle('open');
+    document.getElementById('headerButtons')?.classList.toggle('open');
 }
 function cerrarMobileMenu() {
-    document.getElementById('hamburger').classList.remove('open');
-    document.getElementById('headerButtons').classList.remove('open');
+    document.getElementById('hamburger')?.classList.remove('open');
+    document.getElementById('headerButtons')?.classList.remove('open');
 }
 
 // ================================================================
