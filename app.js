@@ -6,10 +6,18 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 const SUPABASE_CONFIGURED = !SUPABASE_URL.includes('YOUR_PROJECT');
 let db = null;
+console.log('[Supabase] CONFIGURED:', SUPABASE_CONFIGURED);
+console.log('[Supabase] URL:', SUPABASE_URL);
 if (SUPABASE_CONFIGURED) {
-    const { createClient } = supabase;
-    db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    try {
+        const { createClient } = supabase;
+        db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        console.log('[Supabase] Client created OK:', db);
+    } catch (err) {
+        console.error('[Supabase] Failed to create client:', err);
+    }
 } else {
+    console.warn('[Supabase] Not configured — using localStorage fallback');
     document.getElementById('supabaseBanner').style.display = 'block';
 }
 
@@ -64,17 +72,21 @@ async function cargarDatos() {
     if (carritoGuardado) carrito = JSON.parse(carritoGuardado);
 
     if (SUPABASE_CONFIGURED) {
+        console.log('[cargarDatos] Fetching from Supabase...');
         try {
             const [{ data: cats, error: e1 }, { data: prods, error: e2 }] = await Promise.all([
                 db.from('categorias').select('nombre').order('nombre'),
                 db.from('productos').select('*').order('created_at', { ascending: false })
             ]);
+            console.log('[cargarDatos] categorias response → data:', cats, 'error:', e1);
+            console.log('[cargarDatos] productos response  → data:', prods, 'error:', e2);
             if (e1) throw e1;
             if (e2) throw e2;
             categorias = cats.map(c => c.nombre);
             productos  = prods;
+            console.log('[cargarDatos] Loaded', categorias.length, 'categorias,', productos.length, 'productos');
         } catch (err) {
-            console.error('Supabase error:', err);
+            console.error('[cargarDatos] Supabase error:', err);
             alert('Error al cargar datos: ' + err.message);
         }
     } else {
