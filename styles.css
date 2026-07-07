@@ -179,6 +179,20 @@ button { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; 
 .overlay.active { display: block; pointer-events: auto; }
 .modal.active, .modal-contacto.active, .modal-password.active { pointer-events: auto; }
 
+/* Toast notification */
+.toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(16px); background-color: #223A63; color: white; padding: 14px 28px; border-radius: 12px; font-weight: bold; font-size: 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.25); z-index: 9999; opacity: 0; transition: opacity 0.3s, transform 0.3s; pointer-events: none; white-space: nowrap; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* Stock admin */
+.stock-item { display: flex; justify-content: space-between; align-items: center; background: #f9f9f9; padding: 10px 14px; border-radius: 8px; border-left: 4px solid #C8A46A; margin-bottom: 10px; gap: 10px; flex-wrap: wrap; }
+.stock-name { font-weight: bold; color: #223A63; font-size: 13px; flex: 1; min-width: 0; }
+.stock-name em { color: #5B6F8F; font-style: normal; font-weight: normal; }
+.stock-controls { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
+.stock-input { width: 70px; padding: 6px 8px; border: 2px solid #D8C7B6; border-radius: 6px; font-family: 'Georgia', serif; font-size: 14px; text-align: center; }
+.stock-input:focus { outline: none; border-color: #223A63; }
+.btn-update-stock { background-color: #C8A46A; color: white; padding: 6px 14px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 12px; }
+.btn-update-stock:hover { background-color: #b89154; }
+
 /* Footer */
 footer { background-color: #223A63; color: white; text-align: center; padding: 30px 20px; }
 footer h3 { margin-bottom: 10px; font-size: 18px; }

@@ -66,3 +66,47 @@ CREATE POLICY "Actualizar storage"
 CREATE POLICY "Eliminar storage"
   ON storage.objects FOR DELETE
   USING (bucket_id = 'product-images');
+
+-- ============================================================
+-- MODELOS DE CELULARES
+-- Ejecuta esto para habilitar la gestión de modelos desde la DB
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS modelos (
+  id   TEXT PRIMARY KEY,        -- slug: 'iphone15pro'
+  nombre TEXT NOT NULL UNIQUE,  -- display: 'iPhone 15 Pro'
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+ALTER TABLE modelos ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Lectura pública modelos"   ON modelos FOR SELECT USING (true);
+CREATE POLICY "Escritura pública modelos" ON modelos FOR ALL   USING (true) WITH CHECK (true);
+
+INSERT INTO modelos (id, nombre) VALUES
+  ('iphone11',      'iPhone 11'),
+  ('iphone12',      'iPhone 12'),
+  ('iphone12mini',  'iPhone 12 Mini'),
+  ('iphone12pro',   'iPhone 12 Pro'),
+  ('iphone12promax','iPhone 12 Pro Max'),
+  ('iphone13',      'iPhone 13'),
+  ('iphone13mini',  'iPhone 13 Mini'),
+  ('iphone13pro',   'iPhone 13 Pro'),
+  ('iphone13promax','iPhone 13 Pro Max'),
+  ('iphone14',      'iPhone 14'),
+  ('iphone14plus',  'iPhone 14 Plus'),
+  ('iphone14pro',   'iPhone 14 Pro'),
+  ('iphone14promax','iPhone 14 Pro Max'),
+  ('iphone15',      'iPhone 15'),
+  ('iphone15plus',  'iPhone 15 Plus'),
+  ('iphone15pro',   'iPhone 15 Pro'),
+  ('iphone15promax','iPhone 15 Pro Max'),
+  ('iphone16',      'iPhone 16'),
+  ('iphone16plus',  'iPhone 16 Plus'),
+  ('iphone16pro',   'iPhone 16 Pro'),
+  ('iphone16promax','iPhone 16 Pro Max'),
+  ('iphone17',      'iPhone 17'),
+  ('iphone17plus',  'iPhone 17 Plus'),
+  ('iphone17pro',   'iPhone 17 Pro'),
+  ('iphone17promax','iPhone 17 Pro Max')
+ON CONFLICT (id) DO NOTHING;

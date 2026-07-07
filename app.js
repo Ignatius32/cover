@@ -32,6 +32,7 @@ let modeloActual    = 'iphone11';
 let usuarioAutenticado = false;
 let productoEnEdicion  = null;
 let pendingAction      = null;
+let modelos            = [];
 
 const CATEGORIAS_DEFAULT = ['fundas','protectores','correas','ventosas','airpods pro de segunda generación'];
 
@@ -74,9 +75,10 @@ async function cargarDatos() {
     if (SUPABASE_CONFIGURED) {
         console.log('[cargarDatos] Fetching from Supabase...');
         try {
-            const [{ data: cats, error: e1 }, { data: prods, error: e2 }] = await Promise.all([
+            const [{ data: cats, error: e1 }, { data: prods, error: e2 }, { data: mods, error: e3 }] = await Promise.all([
                 db.from('categorias').select('nombre').order('nombre'),
-                db.from('productos').select('*').order('created_at', { ascending: false })
+                db.from('productos').select('*').order('created_at', { ascending: false }),
+                db.from('modelos').select('id,nombre').order('nombre')
             ]);
             console.log('[cargarDatos] categorias response → data:', cats, 'error:', e1);
             console.log('[cargarDatos] productos response  → data:', prods, 'error:', e2);
@@ -84,7 +86,10 @@ async function cargarDatos() {
             if (e2) throw e2;
             categorias = cats.map(c => c.nombre);
             productos  = prods;
-            console.log('[cargarDatos] Loaded', categorias.length, 'categorias,', productos.length, 'productos');
+            modelos    = (mods && mods.length) ? mods : [...MODELOS];
+            if (e3) { console.warn('[cargarDatos] modelos table not found, using defaults'); modelos = [...MODELOS]; }
+            if (!modelos.find(m => m.id === modeloActual) && modelos.length) modeloActual = modelos[0].id;
+            console.log('[cargarDatos] Loaded', categorias.length, 'categorias,', productos.length, 'productos,', modelos.length, 'modelos');
         } catch (err) {
             console.error('[cargarDatos] Supabase error:', err);
             alert('Error al cargar datos: ' + err.message);
@@ -94,6 +99,7 @@ async function cargarDatos() {
         const savedProds = localStorage.getItem('coverStoreProductos');
         categorias = savedCats  ? JSON.parse(savedCats)  : [...CATEGORIAS_DEFAULT];
         productos  = savedProds ? JSON.parse(savedProds) : [];
+        modelos    = [...MODELOS];
     }
 
     actualizarBotonesCategoria();
@@ -116,6 +122,14 @@ function guardarLocalStorage() {
 function mostrarCargando(show) {
     if (show) document.getElementById('productosGrid').innerHTML =
         '<div class="loading-wrapper"><div class="spinner"></div><p>Cargando productos...</p></div>';
+}
+
+function mostrarToast(msg, duracion = 2500) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    clearTimeout(t._timeout);
+    t.classList.add('show');
+    t._timeout = setTimeout(() => t.classList.remove('show'), duracion);
 }
 
 function escapeHtml(str) {
@@ -152,8 +166,8 @@ function mostrarProductos() {
                 <div class="product-stock">Stock: ${p.stock} unidades</div>
                 <div class="product-price">$${Number(p.precio).toLocaleString()}</div>
                 <div class="product-actions">
-                    <button class="btn-add" onclick="agregarAlCarrito(${p.id})" ${p.stock===0?'disabled':''}>
-                        ${p.stock>0?'Agregar':'Sin Stock'}
+                    <button class="btn-add" onclick="agregarAlCarrito(${p.id})">
+                        Agregar
                     </button>
                     <button class="btn-edit"   onclick="solicitarEditarProducto(${p.id})">✏️ Editar</button>
                     <button class="btn-delete" onclick="solicitarEliminarProducto(${p.id})">🗑️</button>
@@ -172,7 +186,7 @@ function actualizarBotonesCategoria() {
 }
 
 function actualizarBotonesModelo() {
-    document.getElementById('modeloButtons').innerHTML = MODELOS.map(m =>
+    document.getElementById('modeloButtons').innerHTML = modelos.map(m =>
         `<button class="filter-btn ${m.id===modeloActual?'active':''}" onclick="filtrarPorModelo('${m.id}',this)">${m.nombre}</button>`
     ).join('');
 }
@@ -280,7 +294,7 @@ function rellenarSelectCategoria() {
 function rellenarSelectModelo() {
     const sel = document.getElementById('productoModelo');
     sel.innerHTML = '<option value="">Selecciona un modelo</option>' +
-        MODELOS.map(m => `<option value="${m.id}">${m.nombre}</option>`).join('');
+        modelos.map(m => `<option value="${m.id}">${m.nombre}</option>`).join('');
     if (productoEnEdicion && productoEnEdicion.modelo) sel.value = productoEnEdicion.modelo;
 }
 
@@ -415,6 +429,8 @@ function solicitarEliminarProducto(id) {
 // ================================================================
 function abrirAdmin() {
     mostrarCategoriasAdmin();
+    mostrarModelosAdmin();
+    mostrarStockAdmin();
     document.getElementById('modalAdmin').classList.add('active');
     document.getElementById('overlay').classList.add('active');
 }
@@ -454,6 +470,103 @@ async function agregarCategoria() {
     } catch (err) { alert('❌ Error: ' + err.message); }
 }
 
+// ================================================================
+// ADMIN — MODELOS
+// ================================================================
+function mostrarModelosAdmin() {
+    const lista = document.getElementById('modelosList');
+    if (!lista) return;
+    lista.innerHTML = modelos.map(m => `
+        <div class="category-item">
+            <span>${escapeHtml(m.nombre)}</span>
+            <button class="btn-remove-category" data-id="${escapeHtml(m.id)}">Eliminar</button>
+        </div>
+    `).join('') || '<p style="color:#999;padding:10px;">No hay modelos cargados</p>';
+    lista.onclick = e => {
+        const btn = e.target.closest('.btn-remove-category');
+        if (btn) eliminarModelo(btn.dataset.id);
+    };
+}
+
+async function agregarModelo() {
+    const input = document.getElementById('nuevoModelo');
+    const nombre = input.value.trim();
+    if (!nombre) { alert('Ingresa el nombre del modelo'); return; }
+    const id = nombre.toLowerCase().replace(/\s+/g, '').replace(/[^a-z0-9]/g, '');
+    if (modelos.some(m => m.id === id)) { alert('Este modelo ya existe'); return; }
+    try {
+        if (SUPABASE_CONFIGURED) {
+            const { error } = await db.from('modelos').insert([{ id, nombre }]);
+            if (error) throw error;
+            await cargarDatos();
+        } else {
+            modelos.push({ id, nombre });
+            actualizarBotonesModelo();
+        }
+        mostrarModelosAdmin();
+        input.value = '';
+        mostrarToast('✅ Modelo agregado');
+    } catch (err) { alert('❌ Error: ' + err.message); }
+}
+
+async function eliminarModelo(id) {
+    if (productos.some(p => p.modelo === id)) {
+        alert('No podés eliminar este modelo porque tiene productos asociados.');
+        return;
+    }
+    const m = modelos.find(m => m.id === id);
+    if (!confirm(`¿Eliminar el modelo "${m ? m.nombre : id}"?`)) return;
+    try {
+        if (SUPABASE_CONFIGURED) {
+            const { error } = await db.from('modelos').delete().eq('id', id);
+            if (error) throw error;
+            await cargarDatos();
+        } else {
+            modelos = modelos.filter(m => m.id !== id);
+            actualizarBotonesModelo();
+        }
+        mostrarModelosAdmin();
+        mostrarToast('✅ Modelo eliminado');
+    } catch (err) { alert('❌ Error: ' + err.message); }
+}
+
+// ================================================================
+// ADMIN — STOCK
+// ================================================================
+function mostrarStockAdmin() {
+    const lista = document.getElementById('stockList');
+    if (!lista) return;
+    if (!productos.length) {
+        lista.innerHTML = '<p style="color:#999;padding:10px;">No hay productos cargados</p>';
+        return;
+    }
+    lista.innerHTML = productos.map(p => `
+        <div class="stock-item">
+            <span class="stock-name">${escapeHtml(p.nombre)}${p.modelo ? ' <em>('+escapeHtml(p.modelo)+')</em>' : ''}</span>
+            <div class="stock-controls">
+                <input type="number" min="0" class="stock-input" value="${p.stock}" id="stock_${p.id}">
+                <button class="btn-update-stock" onclick="actualizarStock(${p.id})">Guardar</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+async function actualizarStock(id) {
+    const input = document.getElementById('stock_' + id);
+    const nuevoStock = parseInt(input.value);
+    if (isNaN(nuevoStock) || nuevoStock < 0) { alert('Stock inválido'); return; }
+    try {
+        if (SUPABASE_CONFIGURED) {
+            const { error } = await db.from('productos').update({ stock: nuevoStock }).eq('id', id);
+            if (error) throw error;
+        }
+        const p = productos.find(p => String(p.id) === String(id));
+        if (p) { p.stock = nuevoStock; if (!SUPABASE_CONFIGURED) guardarLocalStorage(); }
+        mostrarProductos();
+        mostrarToast('✅ Stock actualizado');
+    } catch (err) { alert('❌ Error: ' + err.message); }
+}
+
 async function eliminarCategoria(nombre) {
     if (productos.some(p => p.categoria === nombre)) {
         alert('No podés eliminar esta categoría porque tiene productos asociados.');
@@ -483,13 +596,13 @@ function agregarAlCarrito(id) {
     if (!producto) return;
     const item = carrito.find(i => String(i.id) === String(id));
     if (item) {
-        if (item.cantidad < producto.stock) item.cantidad++;
-        else { alert('No hay más stock disponible'); return; }
+        item.cantidad++;
     } else {
         carrito.push({ id: producto.id, nombre: producto.nombre, precio: producto.precio,
             cantidad: 1, color: producto.color||null, modelo: producto.modelo||null });
     }
     guardarCarrito(); actualizarCarrito();
+    mostrarToast('🛒 ¡' + producto.nombre + ' agregado al carrito!');
 }
 
 function cambiarCantidad(id, delta) {

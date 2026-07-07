@@ -176,6 +176,18 @@
                 <button type="button" onclick="agregarCategoria()">+ Agregar</button>
             </div>
         </div>
+        <div class="admin-section">
+            <h3>📱 Gestionar Modelos</h3>
+            <div class="categories-list" id="modelosList"></div>
+            <div class="add-category-form">
+                <input type="text" id="nuevoModelo" placeholder="Ej: iPhone 18 Pro...">
+                <button type="button" onclick="agregarModelo()">+ Agregar</button>
+            </div>
+        </div>
+        <div class="admin-section">
+            <h3>📦 Gestionar Stock</h3>
+            <div id="stockList"></div>
+        </div>
     </div>
 </div>
 
@@ -186,6 +198,8 @@
     <p>WhatsApp: <strong>+54 9 3794 86-1508</strong></p>
     <p style="margin-top:10px;font-size:12px;">© Cover Store. Protege tu iPhone con elegancia.</p>
 </footer>
+
+<div class="toast" id="toast"></div>
 
 <script src="app.js"></script>
 </body>
