@@ -198,7 +198,6 @@ function filtrarPorCategoria(cat, btn) {
     categoriaActual = cat;
     document.querySelectorAll('#categoriaButtons .filter-btn').forEach(b => b.classList.remove('active'));
     if (btn) btn.classList.add('active');
-    document.getElementById('modeloFilter').style.display = ['fundas','protectores'].includes(cat) ? 'block' : 'none';
     mostrarProductos();
 }
 

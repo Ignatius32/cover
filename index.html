@@ -18,7 +18,6 @@
     <div class="header-content">
         <div class="logo">🐚 Cover Store</div>
         <div class="header-buttons" id="headerButtons">
-            <button class="btn-contact"   onclick="cerrarMobileMenu(); abrirContacto();">📱 Contacto</button>
         </div>
         <div class="header-actions">
             <button class="btn-secondary cart-badge" onclick="cerrarMobileMenu(); abrirCarrito();">
@@ -43,15 +42,17 @@
         <input type="text" class="search-input" id="searchInput" placeholder="Busca tu producto..." oninput="mostrarProductos()">
     </div>
     <div class="filters">
+        <div class="filter-group" id="modeloFilter">
+            <span class="filter-label">📱 Modelo de iPhone</span>
+            <select id="modeloSelect" class="modelo-select" onchange="filtrarPorModelo(this.value)">
+                <option value="" disabled>Seleccioná tu modelo...</option>
+            </select>
+        </div>
         <div class="filter-group">
             <span class="filter-label">Categoría</span>
-            <div class="filter-buttons" id="categoriaButtons"></div>
-        </div>
-        <div class="filter-group" id="modeloFilter" style="display:none;">
-            <span class="filter-label">Modelo de iPhone</span>
-            <select id="modeloSelect" class="modelo-select" onchange="filtrarPorModelo(this.value)">
-                <option value="" disabled>Selecciona tu modelo...</option>
-            </select>
+            <div class="filter-scroll-wrap">
+                <div class="filter-buttons" id="categoriaButtons"></div>
+            </div>
         </div>
     </div>
     <div class="products-grid" id="productosGrid"></div>
@@ -70,6 +71,10 @@
                 <span class="btn-special-order-sub">+54 9 3794 86-1508</span>
             </span>
         </button>
+        <div class="contact-social-row">
+            <a href="https://wa.me/5493794861508" class="contact-social-link contact-link-wa" target="_blank" rel="noopener">💬 +54 9 3794 86-1508</a>
+            <a href="https://www.instagram.com/coverstore.ok?igsh=MWNpbm16c2d3anF1cQ%3D%3D&utm_source=qr" class="contact-social-link contact-link-ig" target="_blank" rel="noopener">📸 @coverstore.ok</a>
+        </div>
     </div>
 </div>
 

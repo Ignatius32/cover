@@ -98,13 +98,16 @@ button { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; 
 .filters { margin-bottom: 30px; }
 .filter-group { margin-bottom: 20px; }
 .filter-label { display: block; font-weight: bold; color: #223A63; margin-bottom: 10px; font-size: 16px; }
-.filter-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
-.filter-btn { padding: 8px 18px; background-color: white; border: 2px solid #D8C7B6; border-radius: 20px; cursor: pointer; transition: all 0.25s; font-size: 14px; font-weight: bold; color: #5B6F8F; white-space: nowrap; }
+.filter-scroll-wrap { position: relative; }
+.filter-scroll-wrap::after { content: ''; position: absolute; right: 0; top: 0; bottom: 0; width: 48px; background: linear-gradient(to right, transparent, #F6EFE7); pointer-events: none; border-radius: 0 20px 20px 0; }
+.filter-buttons { display: flex; gap: 8px; overflow-x: auto; overflow-y: hidden; flex-wrap: nowrap; padding-bottom: 6px; scroll-snap-type: x proximity; scrollbar-width: none; -ms-overflow-style: none; }
+.filter-buttons::-webkit-scrollbar { display: none; }
+.filter-btn { padding: 8px 18px; background-color: white; border: 2px solid #D8C7B6; border-radius: 20px; cursor: pointer; transition: all 0.25s; font-size: 14px; font-weight: bold; color: #5B6F8F; white-space: nowrap; scroll-snap-align: start; flex-shrink: 0; }
 .filter-btn:hover { border-color: #223A63; color: #223A63; }
 .filter-btn.active { background-color: #223A63; border-color: #223A63; color: white; box-shadow: 0 3px 10px rgba(34,58,99,0.28); }
 
 /* Modelo select */
-.modelo-select { width: 100%; padding: 12px 44px 12px 18px; border: 2px solid #D8C7B6; border-radius: 12px; font-family: 'Georgia', serif; font-size: 15px; color: #223A63; background: white; cursor: pointer; appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath d='M1 1l6 6 6-6' stroke='%23223A63' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; transition: border-color 0.2s, box-shadow 0.2s; max-width: 360px; }
+.modelo-select { width: 100%; max-width: 480px; padding: 12px 44px 12px 18px; border: 2px solid #D8C7B6; border-radius: 12px; font-family: 'Georgia', serif; font-size: 15px; color: #223A63; background: white; cursor: pointer; appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath d='M1 1l6 6 6-6' stroke='%23223A63' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; transition: border-color 0.2s, box-shadow 0.2s; }
 .modelo-select:focus { outline: none; border-color: #223A63; box-shadow: 0 0 0 3px rgba(34,58,99,0.12); }
 
 /* Products grid */
@@ -169,6 +172,14 @@ button { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; 
 .btn-special-order-text { display: flex; flex-direction: column; text-align: left; }
 .btn-special-order-main { font-size: 17px; font-weight: bold; line-height: 1.2; }
 .btn-special-order-sub { font-size: 13px; font-weight: normal; opacity: 0.9; margin-top: 2px; }
+
+/* Contact social links */
+.contact-social-row { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-top: 22px; }
+.contact-social-link { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 50px; font-weight: bold; font-size: 14px; text-decoration: none; transition: all 0.25s; }
+.contact-link-wa { background: rgba(37,211,102,0.18); color: white; border: 2px solid rgba(37,211,102,0.5); }
+.contact-link-wa:hover { background: rgba(37,211,102,0.32); }
+.contact-link-ig { background: rgba(255,255,255,0.12); color: white; border: 2px solid rgba(255,255,255,0.35); }
+.contact-link-ig:hover { background: rgba(255,255,255,0.22); }
 
 /* Admin full page */
 .admin-page { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #F0EAE0; z-index: 180; overflow-y: auto; opacity: 0; pointer-events: none; transform: translateY(16px); transition: opacity 0.3s, transform 0.3s; }
