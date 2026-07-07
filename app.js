@@ -759,4 +759,14 @@ window.addEventListener('load', () => {
             cerrarAdminPage();
         }
     });
+    // Smart sticky header: hide on scroll-down, show on scroll-up
+    let lastScrollY = 0;
+    const header = document.querySelector('header');
+    window.addEventListener('scroll', () => {
+        const y = window.scrollY;
+        header.classList.toggle('header--scrolled', y > 10);
+        if (y > lastScrollY && y > 80) header.classList.add('header--hidden');
+        else header.classList.remove('header--hidden');
+        lastScrollY = y;
+    }, { passive: true });
 });
