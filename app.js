@@ -388,7 +388,11 @@ async function guardarProducto(event) {
 
         productoEnEdicion = null;
         cerrarModal('modalAgregarProducto');
-        alert(`✅ Producto ${esEdicion ? 'actualizado' : 'agregado'} exitosamente`);
+        if (document.getElementById('adminPage').classList.contains('active')) {
+            mostrarProductosAdmin();
+            mostrarStockAdmin();
+        }
+        mostrarToast(`✅ Producto ${esEdicion ? 'actualizado' : 'agregado'} exitosamente`);
     } catch (err) {
         console.error(err);
         alert('❌ Error al guardar: ' + err.message);
@@ -432,8 +436,12 @@ function abrirAdmin() {
     mostrarCategoriasAdmin();
     mostrarModelosAdmin();
     mostrarStockAdmin();
-    document.getElementById('modalAdmin').classList.add('active');
-    document.getElementById('overlay').classList.add('active');
+    document.getElementById('adminPage').classList.add('active');
+    window.scrollTo(0, 0);
+}
+
+function cerrarAdminPage() {
+    document.getElementById('adminPage').classList.remove('active');
 }
 
 function mostrarProductosAdmin() {
@@ -462,7 +470,7 @@ function mostrarProductosAdmin() {
         const delBtn  = e.target.closest('.btn-admin-delete');
         if (editBtn) {
             const prod = productos.find(p => String(p.id) === String(editBtn.dataset.id));
-            if (prod) { cerrarModal('modalAdmin'); setTimeout(() => abrirFormProducto(prod), 200); }
+            if (prod) abrirFormProducto(prod);
         }
         if (delBtn) solicitarEliminarProducto(delBtn.dataset.id);
     };
@@ -746,5 +754,10 @@ window.addEventListener('load', () => {
     cargarDatos();
     document.getElementById('nuevaCategoria').addEventListener('keypress', e => {
         if (e.key === 'Enter') { e.preventDefault(); agregarCategoria(); }
+    });
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && document.getElementById('adminPage').classList.contains('active')) {
+            cerrarAdminPage();
+        }
     });
 });

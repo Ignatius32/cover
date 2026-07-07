@@ -19,7 +19,6 @@
         <div class="logo">🐚 Cover Store</div>
         <div class="header-buttons" id="headerButtons">
             <button class="btn-contact"   onclick="cerrarMobileMenu(); abrirContacto();">📱 Contacto</button>
-            <button class="btn-admin"     onclick="cerrarMobileMenu(); requireAuth(() => abrirAdmin(), 'Ingresa la contraseña para acceder al panel de administración');">⚙️ Admin</button>
             <button class="btn-secondary cart-badge" onclick="cerrarMobileMenu(); abrirCarrito();">
                 🛒 Carrito
                 <span class="cart-count" id="cartCount" style="display:none;">0</span>
@@ -53,15 +52,20 @@
     </div>
     <div class="products-grid" id="productosGrid"></div>
     <div class="special-orders">
-        <h2>📦 ¿No encuentras tu modelo?</h2>
-        <p>¡Tenemos fundas para muchos más celulares! Si buscas algo específico que no sea iPhone, contáctanos.</p>
+        <h2>¿No encontrás tu modelo?</h2>
+        <p>Tenemos fundas para muchísimos celulares más. Escribinos y te conseguimos la tuya.</p>
         <div class="special-orders-list">
             <div class="special-order-item"><strong>🤖 Samsung</strong><p>Galaxy, A series, Note</p></div>
             <div class="special-order-item"><strong>📱 Xiaomi</strong><p>Redmi, Poco, Mi series</p></div>
             <div class="special-order-item"><strong>🟦 Motorola</strong><p>Razr, Edge, G series</p></div>
         </div>
-        <p style="font-weight:bold;margin-bottom:20px;">💬 ¡Escribinos por WhatsApp para cotizar tu modelo!</p>
-        <button class="btn-special-order" onclick="cotizarEspecial()">Solicitar Pedido Especial 📞</button>
+        <button class="btn-special-order" onclick="cotizarEspecial()">
+            <span class="btn-special-order-icon">💬</span>
+            <span class="btn-special-order-text">
+                <span class="btn-special-order-main">Escribinos por WhatsApp</span>
+                <span class="btn-special-order-sub">+54 9 3794 86-1508</span>
+            </span>
+        </button>
     </div>
 </div>
 
@@ -161,36 +165,39 @@
     </div>
 </div>
 
-<div class="modal" id="modalAdmin">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2>Panel de Administración</h2>
-            <button class="close-btn" onclick="cerrarModal('modalAdmin')">×</button>
-        </div>
-        <div class="admin-section">
-            <h3>� Gestionar Productos</h3>
-            <button type="button" class="btn-admin-add-product" onclick="cerrarModal('modalAdmin'); setTimeout(() => abrirFormProducto(), 200);">+ Agregar Producto</button>
-            <div id="adminProductosList" style="margin-top:15px;max-height:320px;overflow-y:auto;"></div>
-        </div>
-        <div class="admin-section">
-            <h3>�📂 Gestionar Categorías</h3>
-            <div class="categories-list" id="categoriasList"></div>
-            <div class="add-category-form">
-                <input type="text" id="nuevaCategoria" placeholder="Nueva categoría...">
-                <button type="button" onclick="agregarCategoria()">+ Agregar</button>
+<div class="admin-page" id="adminPage">
+    <div class="admin-page-header">
+        <button class="btn-back-store" onclick="cerrarAdminPage()">&#8592; Volver</button>
+        <h1>&#9881;&#65039; Panel de Administraci&#243;n</h1>
+        <div style="width:120px;"></div>
+    </div>
+    <div class="admin-page-content">
+        <div class="admin-grid">
+            <div class="admin-section admin-section-wide">
+                <h3>&#128230; Gestionar Productos</h3>
+                <button type="button" class="btn-admin-add-product" onclick="abrirFormProducto()">+ Agregar Producto</button>
+                <div id="adminProductosList" style="margin-top:15px;"></div>
             </div>
-        </div>
-        <div class="admin-section">
-            <h3>📱 Gestionar Modelos</h3>
-            <div class="categories-list" id="modelosList"></div>
-            <div class="add-category-form">
-                <input type="text" id="nuevoModelo" placeholder="Ej: iPhone 18 Pro...">
-                <button type="button" onclick="agregarModelo()">+ Agregar</button>
+            <div class="admin-section">
+                <h3>&#128194; Gestionar Categor&#237;as</h3>
+                <div class="categories-list" id="categoriasList"></div>
+                <div class="add-category-form">
+                    <input type="text" id="nuevaCategoria" placeholder="Nueva categor&#237;a...">
+                    <button type="button" onclick="agregarCategoria()">+ Agregar</button>
+                </div>
             </div>
-        </div>
-        <div class="admin-section">
-            <h3>📦 Gestionar Stock</h3>
-            <div id="stockList"></div>
+            <div class="admin-section">
+                <h3>&#128241; Gestionar Modelos</h3>
+                <div class="categories-list" id="modelosList"></div>
+                <div class="add-category-form">
+                    <input type="text" id="nuevoModelo" placeholder="Ej: iPhone 18 Pro...">
+                    <button type="button" onclick="agregarModelo()">+ Agregar</button>
+                </div>
+            </div>
+            <div class="admin-section admin-section-wide">
+                <h3>&#128202; Gestionar Stock</h3>
+                <div id="stockList"></div>
+            </div>
         </div>
     </div>
 </div>
@@ -201,6 +208,7 @@
     <h3>🐚 Cover Store</h3>
     <p>WhatsApp: <strong>+54 9 3794 86-1508</strong></p>
     <p style="margin-top:10px;font-size:12px;">© Cover Store. Protege tu iPhone con elegancia.</p>
+    <button class="btn-footer-admin" onclick="requireAuth(() => abrirAdmin(), 'Ingresa la contraseña para acceder al panel de administración');" aria-label="Administración">⚙️</button>
 </footer>
 
 <div class="toast" id="toast"></div>
