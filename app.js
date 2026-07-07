@@ -28,7 +28,7 @@ let productos       = [];
 let carrito         = [];
 let categorias      = [];
 let categoriaActual = 'todos';
-let modeloActual    = 'iphone11';
+let modeloActual    = '';
 let usuarioAutenticado = false;
 let productoEnEdicion  = null;
 let pendingAction      = null;
@@ -88,7 +88,7 @@ async function cargarDatos() {
             productos  = prods;
             modelos    = (mods && mods.length) ? mods : [...MODELOS];
             if (e3) { console.warn('[cargarDatos] modelos table not found, using defaults'); modelos = [...MODELOS]; }
-            if (!modelos.find(m => m.id === modeloActual) && modelos.length) modeloActual = modelos[0].id;
+            if (modeloActual && !modelos.find(m => m.id === modeloActual)) modeloActual = '';
             console.log('[cargarDatos] Loaded', categorias.length, 'categorias,', productos.length, 'productos,', modelos.length, 'modelos');
         } catch (err) {
             console.error('[cargarDatos] Supabase error:', err);
@@ -144,7 +144,14 @@ function mostrarProductos() {
     let lista = [...productos];
 
     if (categoriaActual !== 'todos') lista = lista.filter(p => p.categoria === categoriaActual);
-    if (categoriasConModelo.includes(categoriaActual)) lista = lista.filter(p => p.modelo === modeloActual);
+    if (categoriasConModelo.includes(categoriaActual) && modeloActual) {
+        lista = lista.filter(p => {
+            if (!p.modelo) return false;
+            // match by id/slug OR by full name (backwards compat)
+            const mEntry = modelos.find(m => m.id === modeloActual);
+            return p.modelo === modeloActual || (mEntry && p.modelo === mEntry.nombre);
+        });
+    }
     if (searchTerm) lista = lista.filter(p => p.nombre.toLowerCase().includes(searchTerm));
 
     if (lista.length === 0) {
@@ -152,7 +159,11 @@ function mostrarProductos() {
         return;
     }
 
-    grid.innerHTML = lista.map(p => `
+    grid.innerHTML = lista.map(p => {
+        const modeloNombre = p.modelo
+            ? (modelos.find(m => m.id === p.modelo || m.nombre === p.modelo)?.nombre || p.modelo)
+            : null;
+        return `
         <div class="product-card">
             <div class="product-image">
                 ${p.imagen_url ? `<img src="${escapeHtml(p.imagen_url)}" alt="${escapeHtml(p.nombre)}" loading="lazy">` : 'Sin imagen'}
@@ -160,7 +171,7 @@ function mostrarProductos() {
             <div class="product-info">
                 <div class="product-name">${escapeHtml(p.nombre)}</div>
                 <div class="product-details">
-                    ${p.modelo ? 'Modelo: '+escapeHtml(p.modelo)+'<br>' : ''}
+                    ${modeloNombre ? 'Modelo: '+escapeHtml(modeloNombre)+'<br>' : ''}
                     ${p.color  ? 'Color: ' +escapeHtml(p.color) +'<br>' : ''}
                 </div>
                 <div class="product-price">$${Number(p.precio).toLocaleString()}</div>
@@ -171,7 +182,7 @@ function mostrarProductos() {
                 </div>
             </div>
         </div>
-    `).join('');
+    `}).join('');
 }
 
 function actualizarBotonesCategoria() {
@@ -185,10 +196,11 @@ function actualizarBotonesCategoria() {
 function actualizarBotonesModelo() {
     const sel = document.getElementById('modeloSelect');
     if (!sel) return;
-    sel.innerHTML = '<option value="" disabled>Selecciona tu modelo...</option>' +
+    sel.innerHTML = '<option value="">Todos los modelos</option>' +
         modelos.map(m =>
             `<option value="${m.id}" ${m.id===modeloActual?'selected':''}>${m.nombre}</option>`
         ).join('');
+    if (modeloActual) sel.value = modeloActual;
 }
 
 // ================================================================
