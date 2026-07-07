@@ -144,13 +144,13 @@ function mostrarProductos() {
     let lista = [...productos];
 
     if (categoriaActual !== 'todos') lista = lista.filter(p => p.categoria === categoriaActual);
-    if (categoriasConModelo.includes(categoriaActual) && modeloActual) {
-        lista = lista.filter(p => {
-            if (!p.modelo) return false;
-            // match by id/slug OR by full name (backwards compat)
-            const mEntry = modelos.find(m => m.id === modeloActual);
-            return p.modelo === modeloActual || (mEntry && p.modelo === mEntry.nombre);
-        });
+    if (modeloActual) {
+        const mEntry = modelos.find(m => m.id === modeloActual);
+        lista = lista.filter(p =>
+            !p.modelo ||                                          // universal (sin modelo)
+            p.modelo === modeloActual ||                          // guardado como id
+            (mEntry && p.modelo === mEntry.nombre)               // guardado como nombre
+        );
     }
     if (searchTerm) lista = lista.filter(p => p.nombre.toLowerCase().includes(searchTerm));
 
@@ -274,12 +274,14 @@ function abrirFormProducto(producto=null) {
     rellenarSelectModelo();
 
     if (producto) {
-        document.getElementById('productoNombre').value    = producto.nombre    || '';
-        document.getElementById('productoCategoria').value  = producto.categoria || '';
-        document.getElementById('productoPrice').value     = producto.precio    || '';
-        document.getElementById('productoStock').value     = producto.stock !== undefined ? producto.stock : '';
-        document.getElementById('productoModelo').value    = producto.modelo    || '';
-        document.getElementById('productoColor').value     = producto.color     || '';
+        document.getElementById('productoNombre').value   = producto.nombre    || '';
+        document.getElementById('productoCategoria').value = producto.categoria || '';
+        document.getElementById('productoPrice').value    = producto.precio    || '';
+        document.getElementById('productoStock').value    = producto.stock !== undefined ? producto.stock : '';
+        // resolve modelo: could be id slug OR full name — find the matching id
+        const modeloEntry = modelos.find(m => m.id === producto.modelo || m.nombre === producto.modelo);
+        document.getElementById('productoModelo').value   = modeloEntry ? modeloEntry.id : '';
+        document.getElementById('productoColor').value    = producto.color     || '';
         if (producto.imagen_url) {
             document.getElementById('imagenPreview').src = producto.imagen_url;
             document.getElementById('imagenPreview').style.display = 'block';
@@ -304,7 +306,10 @@ function rellenarSelectModelo() {
     const sel = document.getElementById('productoModelo');
     sel.innerHTML = '<option value="">Selecciona un modelo</option>' +
         modelos.map(m => `<option value="${m.id}">${m.nombre}</option>`).join('');
-    if (productoEnEdicion && productoEnEdicion.modelo) sel.value = productoEnEdicion.modelo;
+    if (productoEnEdicion && productoEnEdicion.modelo) {
+        const match = modelos.find(m => m.id === productoEnEdicion.modelo || m.nombre === productoEnEdicion.modelo);
+        if (match) sel.value = match.id;
+    }
 }
 
 function actualizarModeloSelect() {
