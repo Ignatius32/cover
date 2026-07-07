@@ -167,10 +167,8 @@ function mostrarProductos() {
                 <div class="product-price">$${Number(p.precio).toLocaleString()}</div>
                 <div class="product-actions">
                     <button class="btn-add" onclick="agregarAlCarrito(${p.id})">
-                        Agregar
+                        🛒 Agregar al carrito
                     </button>
-                    <button class="btn-edit"   onclick="solicitarEditarProducto(${p.id})">✏️ Editar</button>
-                    <button class="btn-delete" onclick="solicitarEliminarProducto(${p.id})">🗑️</button>
                 </div>
             </div>
         </div>
@@ -419,7 +417,9 @@ function solicitarEliminarProducto(id) {
                 guardarLocalStorage();
                 mostrarProductos();
             }
-            alert('✅ Producto eliminado');
+            mostrarProductosAdmin();
+            mostrarStockAdmin();
+            mostrarToast('✅ Producto eliminado');
         } catch (err) { alert('❌ Error: ' + err.message); }
     }, 'Ingresa la contraseña para eliminar el producto');
 }
@@ -428,11 +428,44 @@ function solicitarEliminarProducto(id) {
 // ADMIN — CATEGORIES
 // ================================================================
 function abrirAdmin() {
+    mostrarProductosAdmin();
     mostrarCategoriasAdmin();
     mostrarModelosAdmin();
     mostrarStockAdmin();
     document.getElementById('modalAdmin').classList.add('active');
     document.getElementById('overlay').classList.add('active');
+}
+
+function mostrarProductosAdmin() {
+    const lista = document.getElementById('adminProductosList');
+    if (!lista) return;
+    if (!productos.length) {
+        lista.innerHTML = '<p style="color:#999;padding:10px;">No hay productos cargados</p>';
+        return;
+    }
+    lista.innerHTML = productos.map(p => `
+        <div class="admin-product-item">
+            <div class="admin-product-info">
+                <span class="admin-product-name">${escapeHtml(p.nombre)}</span>
+                ${p.modelo ? `<em class="admin-product-meta">${escapeHtml(p.modelo)}</em>` : ''}
+                <span class="admin-product-price">$${Number(p.precio).toLocaleString()}</span>
+                <span class="admin-product-stock">Stock: ${p.stock}</span>
+            </div>
+            <div class="admin-product-actions">
+                <button class="btn-admin-edit" data-id="${p.id}">✏️</button>
+                <button class="btn-admin-delete" data-id="${p.id}">🗑️</button>
+            </div>
+        </div>
+    `).join('');
+    lista.onclick = e => {
+        const editBtn = e.target.closest('.btn-admin-edit');
+        const delBtn  = e.target.closest('.btn-admin-delete');
+        if (editBtn) {
+            const prod = productos.find(p => String(p.id) === String(editBtn.dataset.id));
+            if (prod) { cerrarModal('modalAdmin'); setTimeout(() => abrirFormProducto(prod), 200); }
+        }
+        if (delBtn) solicitarEliminarProducto(delBtn.dataset.id);
+    };
 }
 
 function mostrarCategoriasAdmin() {

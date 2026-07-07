@@ -19,7 +19,6 @@
         <div class="logo">🐚 Cover Store</div>
         <div class="header-buttons" id="headerButtons">
             <button class="btn-contact"   onclick="cerrarMobileMenu(); abrirContacto();">📱 Contacto</button>
-            <button class="btn-primary"   onclick="cerrarMobileMenu(); requireAuth(() => abrirFormProducto());">📝 Agregar producto</button>
             <button class="btn-admin"     onclick="cerrarMobileMenu(); requireAuth(() => abrirAdmin(), 'Ingresa la contraseña para acceder al panel de administración');">⚙️ Admin</button>
             <button class="btn-secondary cart-badge" onclick="cerrarMobileMenu(); abrirCarrito();">
                 🛒 Carrito
@@ -169,7 +168,12 @@
             <button class="close-btn" onclick="cerrarModal('modalAdmin')">×</button>
         </div>
         <div class="admin-section">
-            <h3>📂 Gestionar Categorías</h3>
+            <h3>� Gestionar Productos</h3>
+            <button type="button" class="btn-admin-add-product" onclick="cerrarModal('modalAdmin'); setTimeout(() => abrirFormProducto(), 200);">+ Agregar Producto</button>
+            <div id="adminProductosList" style="margin-top:15px;max-height:320px;overflow-y:auto;"></div>
+        </div>
+        <div class="admin-section">
+            <h3>�📂 Gestionar Categorías</h3>
             <div class="categories-list" id="categoriasList"></div>
             <div class="add-category-form">
                 <input type="text" id="nuevaCategoria" placeholder="Nueva categoría...">

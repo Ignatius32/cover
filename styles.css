@@ -174,6 +174,21 @@ button { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; 
 .add-category-form button { padding: 10px 20px; background-color: #1e5a7a; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
 .add-category-form button:hover { background-color: #153d52; }
 
+/* Admin product management */
+.btn-admin-add-product { background-color: #223A63; color: white; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; }
+.btn-admin-add-product:hover { background-color: #1a2d4d; }
+.admin-product-item { display: flex; justify-content: space-between; align-items: center; background: #f9f9f9; padding: 10px 14px; border-radius: 8px; border-left: 4px solid #223A63; margin-bottom: 8px; gap: 10px; flex-wrap: wrap; }
+.admin-product-info { display: flex; gap: 10px; align-items: center; flex: 1; flex-wrap: wrap; min-width: 0; }
+.admin-product-name { font-weight: bold; color: #223A63; font-size: 13px; }
+.admin-product-meta { color: #5B6F8F; font-size: 12px; font-style: normal; }
+.admin-product-price { color: #1e5a7a; font-size: 12px; font-weight: bold; }
+.admin-product-stock { color: #C8A46A; font-size: 12px; font-weight: bold; }
+.admin-product-actions { display: flex; gap: 6px; flex-shrink: 0; }
+.btn-admin-edit { background-color: #223A63; color: white; padding: 6px 12px; border-radius: 6px; font-size: 14px; cursor: pointer; }
+.btn-admin-edit:hover { background-color: #1a2d4d; }
+.btn-admin-delete { background-color: #ff6b6b; color: white; padding: 6px 12px; border-radius: 6px; font-size: 14px; cursor: pointer; }
+.btn-admin-delete:hover { background-color: #ff5252; }
+
 /* Overlay */
 .overlay { position: fixed; top:0; left:0; width:100%; height:100%; background-color: rgba(0,0,0,0.5); z-index: 140; display: none; pointer-events: none; }
 .overlay.active { display: block; pointer-events: auto; }
