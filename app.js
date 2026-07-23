@@ -4,6 +4,10 @@
 const SUPABASE_URL      = 'https://ywxdwqlfvlesyweqkiky.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl3eGR3cWxmdmxlc3l3ZXFraWt5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzNjgzNzgsImV4cCI6MjA5ODk0NDM3OH0.HEcfbfOdoEE0P2ZfyrwhywrSfJwAN97N3Zjw0x-utLs';
 
+// Email de la cuenta admin creada en Supabase Auth (no es secreto: el acceso
+// lo controla la contraseña guardada en Supabase, no este archivo).
+const ADMIN_EMAIL = 'admin@coverstore.local';
+
 const SUPABASE_CONFIGURED = !SUPABASE_URL.includes('YOUR_PROJECT');
 let db = null;
 console.log('[Supabase] CONFIGURED:', SUPABASE_CONFIGURED);
@@ -11,7 +15,9 @@ console.log('[Supabase] URL:', SUPABASE_URL);
 if (SUPABASE_CONFIGURED) {
     try {
         const { createClient } = supabase;
-        db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // persistSession:false → hay que volver a loguearse tras recargar,
+        // igual que el comportamiento anterior basado en variable en memoria.
+        db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { persistSession: false } });
         console.log('[Supabase] Client created OK:', db);
     } catch (err) {
         console.error('[Supabase] Failed to create client:', err);
@@ -232,8 +238,14 @@ function requireAuth(action, message='Ingresa la contraseña para continuar') {
     setTimeout(() => document.getElementById('passwordInput').focus(), 100);
 }
 
-function verificarPassword() {
-    if (document.getElementById('passwordInput').value === '210608.j') {
+async function verificarPassword() {
+    const pass = document.getElementById('passwordInput').value;
+    const confirmBtn = document.querySelector('.btn-password-confirm');
+    confirmBtn.disabled = true;
+    const { error } = await db.auth.signInWithPassword({ email: ADMIN_EMAIL, password: pass });
+    confirmBtn.disabled = false;
+
+    if (!error) {
         usuarioAutenticado = true;
         document.getElementById('modalPassword').classList.remove('active');
         document.getElementById('passwordInput').value = '';

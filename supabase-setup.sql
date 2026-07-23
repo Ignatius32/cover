@@ -27,11 +27,17 @@ CREATE TABLE IF NOT EXISTS productos (
 ALTER TABLE categorias ENABLE ROW LEVEL SECURITY;
 ALTER TABLE productos ENABLE ROW LEVEL SECURITY;
 
--- 4. Políticas: lectura pública + escritura pública (la contraseña está en el frontend)
-CREATE POLICY "Lectura pública categorias"   ON categorias FOR SELECT USING (true);
-CREATE POLICY "Escritura pública categorias" ON categorias FOR ALL   USING (true) WITH CHECK (true);
-CREATE POLICY "Lectura pública productos"    ON productos  FOR SELECT USING (true);
-CREATE POLICY "Escritura pública productos"  ON productos  FOR ALL   USING (true) WITH CHECK (true);
+-- 4. Políticas: lectura pública, escritura solo para usuarios autenticados
+--    (el admin se loguea con Supabase Auth — ver instrucciones al final del archivo)
+DROP POLICY IF EXISTS "Escritura pública categorias" ON categorias;
+DROP POLICY IF EXISTS "Lectura pública categorias"   ON categorias;
+DROP POLICY IF EXISTS "Escritura pública productos"  ON productos;
+DROP POLICY IF EXISTS "Lectura pública productos"    ON productos;
+
+CREATE POLICY "Lectura pública categorias"      ON categorias FOR SELECT USING (true);
+CREATE POLICY "Escritura autenticada categorias" ON categorias FOR ALL   USING (auth.role() = 'authenticated') WITH CHECK (auth.role() = 'authenticated');
+CREATE POLICY "Lectura pública productos"       ON productos  FOR SELECT USING (true);
+CREATE POLICY "Escritura autenticada productos"  ON productos  FOR ALL   USING (auth.role() = 'authenticated') WITH CHECK (auth.role() = 'authenticated');
 
 -- 5. Categorías por defecto
 INSERT INTO categorias (nombre) VALUES
@@ -51,21 +57,26 @@ INSERT INTO storage.buckets (id, name, public)
 VALUES ('product-images', 'product-images', true)
 ON CONFLICT (id) DO NOTHING;
 
+DROP POLICY IF EXISTS "Lectura pública storage" ON storage.objects;
+DROP POLICY IF EXISTS "Subida storage"          ON storage.objects;
+DROP POLICY IF EXISTS "Actualizar storage"      ON storage.objects;
+DROP POLICY IF EXISTS "Eliminar storage"        ON storage.objects;
+
 CREATE POLICY "Lectura pública storage"
   ON storage.objects FOR SELECT
   USING (bucket_id = 'product-images');
 
-CREATE POLICY "Subida storage"
+CREATE POLICY "Subida storage autenticada"
   ON storage.objects FOR INSERT
-  WITH CHECK (bucket_id = 'product-images');
+  WITH CHECK (bucket_id = 'product-images' AND auth.role() = 'authenticated');
 
-CREATE POLICY "Actualizar storage"
+CREATE POLICY "Actualizar storage autenticada"
   ON storage.objects FOR UPDATE
-  USING (bucket_id = 'product-images');
+  USING (bucket_id = 'product-images' AND auth.role() = 'authenticated');
 
-CREATE POLICY "Eliminar storage"
+CREATE POLICY "Eliminar storage autenticada"
   ON storage.objects FOR DELETE
-  USING (bucket_id = 'product-images');
+  USING (bucket_id = 'product-images' AND auth.role() = 'authenticated');
 
 -- ============================================================
 -- MODELOS DE CELULARES
@@ -80,8 +91,11 @@ CREATE TABLE IF NOT EXISTS modelos (
 
 ALTER TABLE modelos ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Lectura pública modelos"   ON modelos FOR SELECT USING (true);
-CREATE POLICY "Escritura pública modelos" ON modelos FOR ALL   USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "Lectura pública modelos"   ON modelos;
+DROP POLICY IF EXISTS "Escritura pública modelos" ON modelos;
+
+CREATE POLICY "Lectura pública modelos"      ON modelos FOR SELECT USING (true);
+CREATE POLICY "Escritura autenticada modelos" ON modelos FOR ALL   USING (auth.role() = 'authenticated') WITH CHECK (auth.role() = 'authenticated');
 
 INSERT INTO modelos (id, nombre) VALUES
   ('iphone11',      'iPhone 11'),
@@ -110,3 +124,22 @@ INSERT INTO modelos (id, nombre) VALUES
   ('iphone17pro',   'iPhone 17 Pro'),
   ('iphone17promax','iPhone 17 Pro Max')
 ON CONFLICT (id) DO NOTHING;
+
+-- ============================================================
+-- CUENTA ADMIN (pasos manuales, una sola vez)
+-- ============================================================
+-- Las políticas de arriba exigen auth.role() = 'authenticated' para
+-- escribir. Para eso necesitás un usuario real en Supabase Auth:
+--
+-- 1. Dashboard → Authentication → Providers → confirmá que "Email" esté habilitado.
+-- 2. Dashboard → Authentication → Users → "Add user" → "Create new user":
+--      Email:    admin@coverstore.local   (o el que hayas puesto en ADMIN_EMAIL en app.js)
+--      Password: elegí una contraseña fuerte real (esta es la que se usa para
+--                entrar al panel — NO se guarda en el código)
+--      Marcá "Auto Confirm User" para no tener que confirmar por mail.
+-- 3. Listo. app.js ahora hace login contra Supabase Auth con ese email +
+--    la contraseña que ingresés en el modal, en vez de comparar un string
+--    hardcodeado.
+--
+-- Si en algún momento querés cambiar la contraseña del admin, hacelo desde
+-- Authentication → Users → (el usuario) → "Reset password", sin tocar el código.
